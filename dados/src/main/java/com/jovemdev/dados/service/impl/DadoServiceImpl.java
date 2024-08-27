@@ -2,7 +2,6 @@ package com.jovemdev.dados.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -19,7 +18,7 @@ public class DadoServiceImpl implements DadoService {
 	private final List<Jogada> listaDeJogadas = new ArrayList<>();
 	private final Random random = new Random();
 
-	public Optional<JogadaDto> realizarAposta(Integer qtdDados, Integer valorAposta) throws IllegalArgumentException {
+	public JogadaDto realizarAposta(Integer qtdDados, Integer valorAposta) throws IllegalArgumentException {
 		validaDados(qtdDados, valorAposta);
 
 		Jogada novaJogada = new Jogada();
@@ -31,13 +30,13 @@ public class DadoServiceImpl implements DadoService {
 
 		listaDeJogadas.add(novaJogada);
 
-		return Optional.ofNullable(new JogadaDto(novaJogada));
+		return new JogadaDto(novaJogada);
 	}
 
 	public List<JogadaDto> listarJogadas() {
 		return listaDeJogadas.stream().map(jogada -> new JogadaDto(jogada)).toList();
 	}
-	
+
 	private void validaDados(Integer qtdDados, Integer valorAposta) throws IllegalArgumentException {
 		if (qtdDados < 1 || qtdDados > 4) {
 			throw new IllegalArgumentException("Quantidade de dados inválida! Esperado: 1 a 4");

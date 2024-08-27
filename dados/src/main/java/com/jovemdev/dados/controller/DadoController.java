@@ -29,7 +29,7 @@ public class DadoController {
 	@PostMapping("/{qtdDados}/{valorAposta}")
 	public ResponseEntity<?> realizarAposta(@PathVariable Integer qtdDados, @PathVariable Integer valorAposta) {
 		try {
-			return ResponseEntity.ok(dadoService.realizarAposta(qtdDados, valorAposta).get());
+			return ResponseEntity.ok(dadoService.realizarAposta(qtdDados, valorAposta));
 		} catch (IllegalArgumentException e) {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 		}
