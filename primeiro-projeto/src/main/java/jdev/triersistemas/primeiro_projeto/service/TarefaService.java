@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import jdev.triersistemas.primeiro_projeto.dto.TarefaDto;
+import jdev.triersistemas.primeiro_projeto.exceptions.EntidadeNaoEncontradaException;
 
 public interface TarefaService {
 
@@ -13,7 +14,7 @@ public interface TarefaService {
 
 	TarefaDto create(TarefaDto tarefa);
 
-	TarefaDto update(TarefaDto tarefaAtualizada);
+	TarefaDto update(TarefaDto tarefaAtualizada) throws EntidadeNaoEncontradaException;
 
 	void delete(Long id);
 

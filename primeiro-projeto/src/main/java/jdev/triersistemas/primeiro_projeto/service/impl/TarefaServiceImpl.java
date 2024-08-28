@@ -1,72 +1,63 @@
 package jdev.triersistemas.primeiro_projeto.service.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.atomic.AtomicLong;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jdev.triersistemas.primeiro_projeto.dto.TarefaDto;
+import jdev.triersistemas.primeiro_projeto.entity.TarefaEntity;
+import jdev.triersistemas.primeiro_projeto.exceptions.EntidadeNaoEncontradaException;
+import jdev.triersistemas.primeiro_projeto.repository.TarefaRepository;
 import jdev.triersistemas.primeiro_projeto.service.TarefaService;
 
 @Service
 public class TarefaServiceImpl implements TarefaService {
 
-	private static List<TarefaDto> listaTarefas = new ArrayList<>();
-	private static AtomicLong contador = new AtomicLong();
+	@Autowired
+	private TarefaRepository repository;
 
 	public List<TarefaDto> findAll() {
-		return listaTarefas;
+		return repository.findAll().stream().map(TarefaDto::new).toList();
 	}
 
 	public Optional<TarefaDto> findById(Long id) {
-		return listaTarefas.stream().filter(obj -> obj.getId().equals(id)).findFirst();
+		return Optional.of(new TarefaDto(repository.findById(id).orElse(null)));
 	}
 
 	public TarefaDto create(TarefaDto tarefa) {
-		tarefa.setId(contador.incrementAndGet());
-		listaTarefas.add(tarefa);
-		return listaTarefas.get(listaTarefas.size() - 1);
+		TarefaEntity entityPersisted = repository.save(new TarefaEntity(tarefa));
+		return new TarefaDto(entityPersisted);
 	}
 
-	public TarefaDto update(TarefaDto tarefaAtualizada) {
-		Optional<TarefaDto> tarefaOptional = listaTarefas.stream()
-				.filter(tarefa -> tarefa.getId().equals(tarefaAtualizada.getId())).findFirst();
+	public TarefaDto update(TarefaDto tarefaAtualizada) throws EntidadeNaoEncontradaException{
+		Optional<TarefaEntity> entidadeOptional = repository.findById(tarefaAtualizada.getId());
+		
+		TarefaEntity entidade = entidadeOptional.orElseThrow(() -> new EntidadeNaoEncontradaException(
+				String.format("Tarefa id:%s não existe.", tarefaAtualizada.getId())));
 
-		if (tarefaOptional.isEmpty()) {
-			return null;
-		}
+		entidade.setTitulo(tarefaAtualizada.getTitulo());
+		entidade.setDescricao(tarefaAtualizada.getDescricao());
+		entidade.setCompleta(tarefaAtualizada.getCompleta());
 
-		tarefaOptional.get().setTitulo(tarefaAtualizada.getTitulo());
-		tarefaOptional.get().setDescricao(tarefaAtualizada.getDescricao());
-		tarefaOptional.get().setCompleta(tarefaAtualizada.isCompleta());
-
-		return listaTarefas.stream().filter(tarefaSalva -> tarefaSalva.getId().equals(tarefaAtualizada.getId()))
-				.findFirst().get();
+		return new TarefaDto(repository.save(entidade));
 	}
 
 	public void delete(Long id) {
-		Optional<TarefaDto> tarefaOptional = listaTarefas.stream().filter(tarefa -> tarefa.getId().equals(id))
-				.findFirst();
-		tarefaOptional.ifPresent(tarefa -> listaTarefas.remove(tarefa));
+		Optional<TarefaEntity> tarefaOptional = repository.findById(id);
+		tarefaOptional.ifPresent(repository::delete);
 	}
 
 	public List<TarefaDto> findCompletas() {
-		return listaTarefas.stream().filter(tarefa -> tarefa.isCompleta()).toList();
+		return repository.findCompleta().stream().map(TarefaDto::new).toList();
 	}
 
 	public List<TarefaDto> findIncompletas() {
-		return listaTarefas.stream().filter(tarefa -> !tarefa.isCompleta()).toList();
+		return repository.findIncompleta().stream().map(TarefaDto::new).toList();
 	}
 
 	public List<TarefaDto> createAll(List<TarefaDto> tarefas) {
-		tarefas.stream().forEach(tarefa -> tarefa.setId(contador.incrementAndGet()));
-		tarefas.stream().forEach(tarefa -> listaTarefas.add(tarefa));
-
-		List<Long> idsInseridos = tarefas.stream().map(tarefa -> tarefa.getId()).toList();
-
-		return listaTarefas.stream().filter(tarefa -> idsInseridos.contains(tarefa.getId())).toList();
+		return tarefas.stream().map(dto -> repository.save(new TarefaEntity(dto))).map(TarefaDto::new).toList();
 	}
-
 }
