@@ -35,7 +35,7 @@ public class TarefaServiceImpl implements TarefaService {
 		Optional<TarefaEntity> entidadeOptional = repository.findById(tarefaAtualizada.getId());
 		
 		TarefaEntity entidade = entidadeOptional.orElseThrow(() -> new EntidadeNaoEncontradaException(
-				String.format("Tarefa id:%s não existe.", tarefaAtualizada.getId())));
+				String.format("Tarefa id: %s não existe.", tarefaAtualizada.getId())));
 
 		entidade.setTitulo(tarefaAtualizada.getTitulo());
 		entidade.setDescricao(tarefaAtualizada.getDescricao());

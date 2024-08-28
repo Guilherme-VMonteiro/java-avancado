@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jdev.triersistemas.primeiro_projeto.dto.TarefaDto;
+import jdev.triersistemas.primeiro_projeto.exceptions.EntidadeNaoEncontradaException;
 import jdev.triersistemas.primeiro_projeto.service.TarefaService;
 
 @RestController
@@ -56,8 +57,12 @@ public class TarefaController {
 	}
 
 	@PutMapping
-	public TarefaDto update(@RequestBody TarefaDto tarefaAtualizada) {
-		return tarefaService.update(tarefaAtualizada);
+	public ResponseEntity<?> update(@RequestBody TarefaDto tarefaAtualizada) {
+		try {
+			return ResponseEntity.ok(tarefaService.update(tarefaAtualizada));
+		}catch (EntidadeNaoEncontradaException e) {
+			return ResponseEntity.badRequest().body(e.getExceptionMessage());
+		}
 	}
 
 	@DeleteMapping("/{id}")

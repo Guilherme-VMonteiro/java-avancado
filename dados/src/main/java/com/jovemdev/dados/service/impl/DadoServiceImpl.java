@@ -34,7 +34,7 @@ public class DadoServiceImpl implements DadoService {
 	}
 
 	public List<JogadaDto> listarJogadas() {
-		return listaDeJogadas.stream().map(jogada -> new JogadaDto(jogada)).toList();
+		return listaDeJogadas.stream().map(JogadaDto::new).toList();
 	}
 
 	private void validaDados(Integer qtdDados, Integer valorAposta) throws IllegalArgumentException {
