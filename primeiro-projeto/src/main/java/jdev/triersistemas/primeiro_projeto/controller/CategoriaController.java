@@ -14,62 +14,55 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jdev.triersistemas.primeiro_projeto.dto.TarefaDto;
+import jdev.triersistemas.primeiro_projeto.dto.CategoriaDto;
+import jdev.triersistemas.primeiro_projeto.exceptions.AcaoInvalidaException;
 import jdev.triersistemas.primeiro_projeto.exceptions.EntidadeNaoEncontradaException;
-import jdev.triersistemas.primeiro_projeto.service.TarefaService;
+import jdev.triersistemas.primeiro_projeto.service.CategoriaService;
 
 @RestController
-@RequestMapping("/tarefa")
-public class TarefaController {
+@RequestMapping("/categoria")
+public class CategoriaController {
 
 	@Autowired
-	private TarefaService tarefaService;
+	private CategoriaService service;
 
 	@GetMapping
-	public List<TarefaDto> findAll() {
-		return tarefaService.findAll();
+	public List<CategoriaDto> findAll() {
+		return service.findAll();
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<?> findById(@PathVariable("id") Long id) {
+	public ResponseEntity<?> findById(@PathVariable Long id) {
 		try {
-			return ResponseEntity.ok(tarefaService.findById(id));
+			return ResponseEntity.ok(service.findById(id));
 		} catch (EntidadeNaoEncontradaException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getExceptionMessage());
 		}
 	}
 
-	@GetMapping("/completas")
-	public List<TarefaDto> findCompletas() {
-		return tarefaService.findCompletas();
-	}
-
-	@GetMapping("/incompletas")
-	public List<TarefaDto> findIncompletas() {
-		return tarefaService.findIncompletas();
-	}
-
 	@PostMapping
-	public TarefaDto create(@RequestBody TarefaDto tarefa) {
-		return tarefaService.create(tarefa);
-	}
-
-	@PostMapping("/criarTodos")
-	public List<TarefaDto> createAll(@RequestBody List<TarefaDto> tarefas) {
-		return tarefaService.createAll(tarefas);
+	public CategoriaDto create(@RequestBody CategoriaDto dto) {
+		return service.create(dto);
 	}
 
 	@PutMapping
-	public ResponseEntity<?> update(@RequestBody TarefaDto tarefaAtualizada) {
+	public ResponseEntity<?> update(@RequestBody CategoriaDto dto) {
 		try {
-			return ResponseEntity.ok(tarefaService.update(tarefaAtualizada));
+			return ResponseEntity.ok(service.update(dto));
 		} catch (EntidadeNaoEncontradaException e) {
 			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getExceptionMessage());
 		}
 	}
 
 	@DeleteMapping("/{id}")
-	public void delete(@PathVariable("id") Long id) {
-		tarefaService.delete(id);
+	public ResponseEntity<?> deleteById(@PathVariable Long id) {
+		try {
+			service.delete(id);
+			return ResponseEntity.ok(null);
+		} catch (EntidadeNaoEncontradaException e) {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getExceptionMessage());
+		} catch (AcaoInvalidaException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getExceptionMessage());
+		}
 	}
 }

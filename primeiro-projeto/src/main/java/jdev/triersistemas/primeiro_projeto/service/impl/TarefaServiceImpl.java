@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jdev.triersistemas.primeiro_projeto.dto.TarefaDto;
+import jdev.triersistemas.primeiro_projeto.entity.CategoriaEntity;
 import jdev.triersistemas.primeiro_projeto.entity.TarefaEntity;
 import jdev.triersistemas.primeiro_projeto.exceptions.EntidadeNaoEncontradaException;
 import jdev.triersistemas.primeiro_projeto.repository.TarefaRepository;
@@ -22,8 +23,12 @@ public class TarefaServiceImpl implements TarefaService {
 		return repository.findAll().stream().map(TarefaDto::new).toList();
 	}
 
-	public Optional<TarefaDto> findById(Long id) {
-		return Optional.of(new TarefaDto(repository.findById(id).orElse(null)));
+	public TarefaDto findById(Long id) throws EntidadeNaoEncontradaException {
+
+		Optional<TarefaEntity> optionalEntity = repository.findById(id);
+
+		return new TarefaDto(optionalEntity.orElseThrow(
+				() -> new EntidadeNaoEncontradaException(String.format("Tarefa id: %s não encontrada", id))));
 	}
 
 	public TarefaDto create(TarefaDto tarefa) {
@@ -31,15 +36,13 @@ public class TarefaServiceImpl implements TarefaService {
 		return new TarefaDto(entityPersisted);
 	}
 
-	public TarefaDto update(TarefaDto tarefaAtualizada) throws EntidadeNaoEncontradaException{
+	public TarefaDto update(TarefaDto tarefaAtualizada) throws EntidadeNaoEncontradaException {
 		Optional<TarefaEntity> entidadeOptional = repository.findById(tarefaAtualizada.getId());
-		
-		TarefaEntity entidade = entidadeOptional.orElseThrow(() -> new EntidadeNaoEncontradaException(
-				String.format("Tarefa id: %s não existe.", tarefaAtualizada.getId())));
 
-		entidade.setTitulo(tarefaAtualizada.getTitulo());
-		entidade.setDescricao(tarefaAtualizada.getDescricao());
-		entidade.setCompleta(tarefaAtualizada.getCompleta());
+		TarefaEntity entidade = entidadeOptional.orElseThrow(() -> new EntidadeNaoEncontradaException(
+				String.format("Tarefa id: %s não encontrada", tarefaAtualizada.getId())));
+
+		entidade.atualizaEntity(tarefaAtualizada);
 
 		return new TarefaDto(repository.save(entidade));
 	}
@@ -59,5 +62,9 @@ public class TarefaServiceImpl implements TarefaService {
 
 	public List<TarefaDto> createAll(List<TarefaDto> tarefas) {
 		return tarefas.stream().map(dto -> repository.save(new TarefaEntity(dto))).map(TarefaDto::new).toList();
+	}
+
+	public List<TarefaDto> findAllByCategoria(CategoriaEntity dto) {
+		return repository.findAllByCategoriaOrderByIdAsc(dto).stream().map(TarefaDto::new).toList();
 	}
 }
