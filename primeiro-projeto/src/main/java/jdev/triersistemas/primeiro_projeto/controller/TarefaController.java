@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jdev.triersistemas.primeiro_projeto.dto.TarefaDto;
+import jdev.triersistemas.primeiro_projeto.exceptions.DataExpiracaoInvalidaException;
 import jdev.triersistemas.primeiro_projeto.exceptions.EntidadeNaoEncontradaException;
 import jdev.triersistemas.primeiro_projeto.service.TarefaService;
 
@@ -39,24 +40,47 @@ public class TarefaController {
 		}
 	}
 
-	@GetMapping("/completas")
+	@GetMapping("/titulo/{titulo}")
+	public List<TarefaDto> findAllByTitulo(@PathVariable String titulo) {
+		return tarefaService.findAllByTitulo(titulo);
+	}
+
+	@GetMapping("/completa")
 	public List<TarefaDto> findCompletas() {
 		return tarefaService.findCompletas();
 	}
 
-	@GetMapping("/incompletas")
+	@GetMapping("/categoria/{id}/{concluido}")
+	public Long contarTarefasPorCategoriaEStatus(@PathVariable Long id, @PathVariable Boolean concluido) {
+		return tarefaService.contarTarefasPorCategoriaEStatus(id, concluido);
+	}
+
+	@GetMapping("/incompleta")
 	public List<TarefaDto> findIncompletas() {
 		return tarefaService.findIncompletas();
 	}
 
+	@GetMapping("/categoria/incompleta/{id}")
+	public List<TarefaDto> findIncompletasPorCategoria(@PathVariable Long id) {
+		return tarefaService.findIncompletasPorCategoria(id);
+	}
+
 	@PostMapping
-	public TarefaDto create(@RequestBody TarefaDto tarefa) {
-		return tarefaService.create(tarefa);
+	public ResponseEntity<?> create(@RequestBody TarefaDto tarefa) {
+		try {
+			return ResponseEntity.ok(tarefaService.create(tarefa));
+		} catch (DataExpiracaoInvalidaException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getExceptionMessage());
+		}
 	}
 
 	@PostMapping("/criarTodos")
-	public List<TarefaDto> createAll(@RequestBody List<TarefaDto> tarefas) {
-		return tarefaService.createAll(tarefas);
+	public ResponseEntity<?> createAll(@RequestBody List<TarefaDto> tarefas) {
+		try {
+			return ResponseEntity.ok(tarefaService.createAll(tarefas));
+		} catch (DataExpiracaoInvalidaException e) {
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getExceptionMessage());
+		}
 	}
 
 	@PutMapping

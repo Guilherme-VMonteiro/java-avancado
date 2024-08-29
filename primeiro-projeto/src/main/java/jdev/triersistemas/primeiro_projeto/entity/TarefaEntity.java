@@ -1,6 +1,9 @@
 package jdev.triersistemas.primeiro_projeto.entity;
 
+import java.time.LocalDate;
+
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -11,12 +14,12 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jdev.triersistemas.primeiro_projeto.dto.TarefaDto;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
 @Entity
 @Table(name = "tarefa")
 public class TarefaEntity {
@@ -29,6 +32,12 @@ public class TarefaEntity {
 	private String descricao;
 	private Boolean completa;
 
+	@Column(name = "data_criacao", nullable = false)
+	private LocalDate dataCriacao;
+
+	@Column(name = "data_expiracao", nullable = false)
+	private LocalDate dataExpiracao;
+
 	@ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.DETACH)
 	@JoinColumn(name = "categoria_id", nullable = false)
 	private CategoriaEntity categoria;
@@ -38,6 +47,8 @@ public class TarefaEntity {
 		this.titulo = dto.getTitulo();
 		this.descricao = dto.getDescricao();
 		this.completa = dto.getCompleta();
+		this.dataCriacao = dto.getDataCriacao();
+		this.dataExpiracao = dto.getDataExpiracao();
 		this.categoria = new CategoriaEntity(dto.getCategoria());
 	}
 
@@ -45,6 +56,7 @@ public class TarefaEntity {
 		this.titulo = dto.getTitulo();
 		this.descricao = dto.getDescricao();
 		this.completa = dto.getCompleta();
+		this.dataExpiracao = dto.getDataExpiracao();
 		this.categoria = new CategoriaEntity(dto.getCategoria());
 	}
 }

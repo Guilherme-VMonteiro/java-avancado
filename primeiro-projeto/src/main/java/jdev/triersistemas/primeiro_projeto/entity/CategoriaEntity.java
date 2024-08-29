@@ -13,12 +13,12 @@ import jakarta.persistence.OneToMany;
 import jdev.triersistemas.primeiro_projeto.dto.CategoriaDto;
 import jdev.triersistemas.primeiro_projeto.enums.PrioridadeEnum;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
 @Entity(name = "categoria")
 public class CategoriaEntity {
 
