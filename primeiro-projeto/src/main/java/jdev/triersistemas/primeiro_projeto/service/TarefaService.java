@@ -33,4 +33,6 @@ public interface TarefaService {
 	Long contarTarefasPorCategoriaEStatus(Long idCategoria, Boolean concluido);
 	
 	List<TarefaDto> findAllByTitulo(String titulo);
+	
+	List<TarefaDto> findAllExpiresSoon(Integer qtdDias);
 }

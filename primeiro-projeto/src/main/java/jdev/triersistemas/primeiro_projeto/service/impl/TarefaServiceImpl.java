@@ -32,7 +32,7 @@ public class TarefaServiceImpl implements TarefaService {
 		return new TarefaDto(optionalEntity.orElseThrow(
 				() -> new EntidadeNaoEncontradaException(String.format("Tarefa id: %s não encontrada", id))));
 	}
-	
+
 	public List<TarefaDto> findAllByTitulo(String titulo) {
 		return repository.findAllByTituloOrderByIdAsc(titulo).stream().map(TarefaDto::new).toList();
 	}
@@ -97,6 +97,8 @@ public class TarefaServiceImpl implements TarefaService {
 		}
 	}
 
-
+	public List<TarefaDto> findAllExpiresSoon(Integer qtdDias) {
+		return repository.findAllExpiresSoon(LocalDate.now().plusDays(qtdDias)).stream().map(TarefaDto::new).toList();
+	}
 
 }

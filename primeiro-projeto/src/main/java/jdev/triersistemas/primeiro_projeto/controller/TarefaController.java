@@ -40,6 +40,11 @@ public class TarefaController {
 		}
 	}
 
+	@GetMapping("/expiracao/{qtdDias}")
+	public List<TarefaDto> findAllExpiresSoon(@PathVariable("qtdDias") Integer qtdDias) {
+		return tarefaService.findAllExpiresSoon(qtdDias);
+	}
+
 	@GetMapping("/titulo/{titulo}")
 	public List<TarefaDto> findAllByTitulo(@PathVariable String titulo) {
 		return tarefaService.findAllByTitulo(titulo);
