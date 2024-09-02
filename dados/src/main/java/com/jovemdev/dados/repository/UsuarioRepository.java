@@ -11,6 +11,6 @@ import com.jovemdev.dados.entity.UsuarioEntity;
 @Repository
 public interface UsuarioRepository extends JpaRepository<UsuarioEntity, Long> {
 	
-	@Query("SELECT u FROM UsuarioEntity u ORDER BY u.percentualAcerto LIMIT 5")
+	@Query("SELECT u FROM UsuarioEntity u ORDER BY u.percentualAcerto DESC LIMIT 5")
 	List<UsuarioEntity> findBests();
 }
