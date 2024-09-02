@@ -1,28 +1,29 @@
 package com.jovemdev.dados.dto;
 
-import java.util.List;
-
-import com.jovemdev.dados.entity.Jogada;
+import com.jovemdev.dados.entity.JogadaEntity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
 public class JogadaDto {
-	
+
 	private Long id;
-	private List<Integer> resultados;
-	private Integer somaDados;
+	private String resultadoDados;
+	private Integer valorAposta;
+	private Integer somaResultado;
 	private Double percentual;
-
-	public JogadaDto(Jogada jogada) {
-		this.id = jogada.getId();
-		this.resultados = jogada.getResultados();
-		this.somaDados = resultados.stream().reduce(0, (subtotal, elemento) -> subtotal + elemento);
-		this.percentual = jogada.getPercentual();
+	private UsuarioDto usuario;	
+	
+	public JogadaDto(JogadaEntity entity) {
+		this.id = entity.getId();
+		this.resultadoDados = entity.getResultadoDados();
+		this.valorAposta = entity.getValorAposta();
+		this.somaResultado = entity.getSomaResultado();
+		this.percentual = entity.getPercentual();
+		this.usuario = new UsuarioDto(entity.getUsuario());
 	}
-
 }
